@@ -17,7 +17,9 @@ Performance Metrics: Displays compression ratio, processing time, and space savi
 User-Friendly Interface: Includes an interactive web application using Flask for uploading, compressing, and downloading files.
 
 <img width="1011" alt="Screenshot 2024-11-21 at 12 10 55 AM" src="https://github.com/user-attachments/assets/74515681-9a5a-49fe-b316-68e8f1441e88">
-<img width="979" alt="Screenshot 2024-11-21 at 12 11 55 AM" src="https://github.com/user-attachments/assets/6920ebad-17f7-42a7-b043-84874afae325">
+<img width="647" alt="Screenshot 2024-11-21 at 12 11 40 AM" src="https://github.com/user-attachments/assets/f1a8c98b-6cfd-4039-b66e-3e80ff846bd4">
+
+
 <img width="783" alt="Screenshot 2024-11-21 at 12 12 13 AM" src="https://github.com/user-attachments/assets/85b0062d-d317-476f-a4bc-9a9babbf6995">
 <img width="857" alt="Screenshot 2024-11-21 at 1 15 05 AM" src="https://github.com/user-attachments/assets/d4a062ad-9046-4897-b1c8-89864b4037c7">
 <img width="800" alt="Screenshot 2024-11-21 at 12 12 30 AM" src="https://github.com/user-attachments/assets/9f922ef9-eb3c-4c45-b9ca-778bd124d3e7">
