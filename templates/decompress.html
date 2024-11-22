@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.dots.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            VANTA.DOTS({
+                el: "#wrapper",
+                mouseControls: true,
+                touchControls: true,
+                gyroControls: false,
+                minHeight: 200.00,
+                minWidth: 200.00,
+                scale: 1.00,
+                scaleMobile: 1.00,
+                color: 0xff5733,  // Orange color for dots
+                color2: 0xff5733,  // Orange color for dots
+                backgroundColor: 0x000000,  // Black background
+                size: 6.00,
+                spacing: 40.00
+            });
+        });
+    </script>
+    <title>Decompress Your File</title>
+    <meta charset="UTF-8">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #000; /* Black background */
+            color: #fff; /* White text */
+        }
+        #wrapper {
+            min-height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .heading {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+        .form-container {
+            background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        input[type="file"] {
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: #333;
+            color: #fff;
+        }
+        .button {
+            background-color: #ff5733; /* Orange button */
+            color: black;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #cc4627; /* Darker orange on hover */
+        }
+        .status-message {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        .status-message.success {
+            color: #28a745;
+        }
+        .status-message.error {
+            color: #dc3545;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin-top: 30px;
+        }
+        #details-container {
+            display: none;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div id="wrapper">
+        <h1 class="heading">Decompress Your File</h1>
+        <div class="form-container">
+            <form id="decompress-form" action="/decompress" method="POST" enctype="multipart/form-data">
+                <div class="input-group">
+                    <label for="file" style="font-size: 14px;">Select a file to decompress:</label><br>
+                    <input type="file" name="file" id="file" required>
+                </div>
+                <button class="button" type="submit">Decompress</button>
+            </form>
+            <div id="status-message" class="status-message" style="display: none;"></div>
+            <a id="download" href="#" class="button" style="display: none; margin-top: 10px;">Download Decompressed File</a>
+            <button id="details-btn" class="button" style="margin-top: 10px; display: none;">Show Details</button>
+
+            <!-- Hidden details and graph container -->
+            <div id="details-container">
+                <div id="file-info" class="status-message" style="margin-top: 20px;"></div>
+                <div id="chart-container" class="chart-container">
+                    <canvas id="fileSizeChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function() {
+            $('#decompress-form').on('submit', function(e) {
+                e.preventDefault();
+        
+                // Get the selected file
+                var file = $('#file')[0].files[0];
+                var originalSize = file.size;
+        
+                // Show status message for file decompression process
+                $('#status-message').removeClass('error').addClass('success').text('Decompressing your file...').show();
+        
+                // Get the current time before decompression
+                var startTime = new Date().getTime();
+        
+                // Create a FormData object and submit the file via AJAX
+                var formData = new FormData(this);
+        
+                $.ajax({
+                    url: '/decompress',  // Replace with your backend route
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        // Simulate a response if backend doesn't provide decompressedSize
+                        var decompressedSize = response.decompressedSize || originalSize * 1.5;  // Simulate a 50% increase
+                        var endTime = new Date().getTime();
+                        var timeTaken = ((endTime - startTime) / 1000).toFixed(2);  // Time in seconds
+        
+                        // Show success message after decompression
+                        $('#status-message').text('File decompressed successfully!').show();
+        
+                        // Show download button
+                        $('#download').show();
+        
+                        // Show the "Details" button
+                        $('#details-btn').show();
+        
+                        // Calculate decompression ratio
+                        var decompressionRatio = (decompressedSize / originalSize).toFixed(2);
+        
+                        // Store details for later
+                        var originalSizeKB = (originalSize / 1024).toFixed(2);
+                        var decompressedSizeKB = (decompressedSize / 1024).toFixed(2);
+                        var details = `
+                            Original Size: ${originalSizeKB} KB<br>
+                            Decompressed Size: ${decompressedSizeKB} KB<br>
+                            Decompression Ratio: ${decompressionRatio}<br>
+                            Time Taken: ${timeTaken} seconds
+                        `;
+                        $('#file-info').html(details);
+        
+                        // Hide the chart initially
+                        $('#chart-container').hide();
+        
+                        // Show the graph when details button is clicked
+                        $('#details-btn').on('click', function() {
+                            $('#details-container').show();
+        
+                            var ctx = document.getElementById('fileSizeChart').getContext('2d');
+                            var chart = new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: ['Original', 'Decompressed'],
+                                    datasets: [{
+                                        label: 'File Sizes (KB)',
+                                        data: [originalSizeKB, decompressedSizeKB],
+                                        backgroundColor: ['#86b8d8', '#9ad1b8'], // Lighter colors for dark background
+                                        borderColor: ['#86b8d8', '#9ad1b8'],
+                                        borderWidth: 1,
+                                        barThickness: 20 // Adjust the width of the bars
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+                                            ticks: {
+                                                color: '#ffffff' // White color for the y-axis ticks
+                                            }
+                                        },
+                                        x: {
+                                            ticks: {
+                                                color: '#ffffff' // White color for the x-axis ticks
+                                            }
+                                        }
+                                    },
+                                    plugins: {
+                                        legend: {
+                                            labels: {
+                                                color: '#ffffff' // White color for the legend
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+        
+                            // Show the chart container
+                            $('#chart-container').show();
+                        });
+                    },
+                    error: function() {
+                        $('#status-message').removeClass('success').addClass('error').text('An unexpected error occurred. Please try again.').show();
+                    }
+                });
+            });
+        });
+    </script>
+    
+</body>
+</html>
